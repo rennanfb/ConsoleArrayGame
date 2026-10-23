@@ -6,29 +6,27 @@ namespace ConsoleArrayGame.GameSystem.Input
     {
         public void WInputLogic()
         {
-            if (GameManager.PlayerListIndex == 0)
+            if (GameManager.ActualPlayerListIndex == 0)
             {
                 //nothing
             }
             else
             {
-
                 GameManager.TextManager.RemovePlayerCharFromList();
 
                 GameManager.DecreasePlayerListIndex();
 
-                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex];
+                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex];
 
-                nextCharList[GameManager.PlayerIndex] = GameManager.TextManager.playerChar;
+                nextCharList[GameManager.ActualPlayerIndex] = GameManager.TextManager.playerChar;
 
-                GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex] = nextCharList;
-
+                GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex] = nextCharList;
             }
         }
 
         public void SInputLogic()
         {
-            if (GameManager.PlayerListIndex == GameManager.TextManager.gameCharsListsSize - 1)
+            if (GameManager.ActualPlayerListIndex == GameManager.TextManager.gameCharsListsSize - 1)
             {
                 //nothing
             }
@@ -38,53 +36,49 @@ namespace ConsoleArrayGame.GameSystem.Input
 
                 GameManager.IncreasePlayerListIndex();
 
-                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex];
+                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex];
 
-                nextCharList[GameManager.PlayerIndex] = GameManager.TextManager.playerChar;
+                nextCharList[GameManager.ActualPlayerIndex] = GameManager.TextManager.playerChar;
 
-                GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex] = nextCharList;
-
+                GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex] = nextCharList;
             }
         }
 
         public void AInputLogic()
         {
-           
-            if (GameManager.PlayerIndex == 0)
+            if (GameManager.ActualPlayerIndex == 0)
             {
                 //nothing
             }
             else
             {
-                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex];
+                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex];
                 
-                nextCharList[GameManager.PlayerIndex - 1] = GameManager.TextManager.playerChar;
-                nextCharList[GameManager.PlayerIndex] = GameManager.TextManager.gameBaseTextChar;
+                nextCharList[GameManager.ActualPlayerIndex - 1] = GameManager.TextManager.playerChar;
+                nextCharList[GameManager.ActualPlayerIndex] = GameManager.TextManager.gameBaseTextChar;
 
                 GameManager.DecreasePlayerIndex();
 
-                GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex] = nextCharList;
+                GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex] = nextCharList;
             }
         }
 
         public void DInputLogic()
         {
-            
-
-            if (GameManager.PlayerIndex == GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex].Length - 1)
+            if (GameManager.ActualPlayerIndex == GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex].Length - 1)
             {
                 //nothing
             }
             else
             {
-                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex];
+                var nextCharList = GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex];
 
-                nextCharList[GameManager.PlayerIndex + 1] = GameManager.TextManager.playerChar;
-                nextCharList[GameManager.PlayerIndex] = GameManager.TextManager.gameBaseTextChar;
+                nextCharList[GameManager.ActualPlayerIndex + 1] = GameManager.TextManager.playerChar;
+                nextCharList[GameManager.ActualPlayerIndex] = GameManager.TextManager.gameBaseTextChar;
 
                 GameManager.IncreasePlayerIndex();
 
-                GameManager.TextManager.gameCharsLists[GameManager.PlayerListIndex] = nextCharList;
+                GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex] = nextCharList;
             }
         }
     }

@@ -10,7 +10,7 @@ namespace ConsoleArrayGame.Managers
         public char playerChar = '•';
         public char explosionChar = '*';
 
-        public int gameCharsListsSize = 24;
+        public int gameCharsListsSize = 26;
         public int gameCharsListSize = 61;
 
         public string baseText = string.Empty;
@@ -53,8 +53,8 @@ namespace ConsoleArrayGame.Managers
 
         public void InitiatePlayerCharPosition()
         {
-            char[] targetList = gameCharsLists[GameManager.PlayerListIndex];
-            targetList[GameManager.PlayerIndex] = playerChar;
+            char[] targetList = gameCharsLists[GameManager.ActualPlayerListIndex];
+            targetList[GameManager.ActualPlayerIndex] = playerChar;
         }
 
         public void InitiateGameCharsLists()
@@ -81,9 +81,9 @@ namespace ConsoleArrayGame.Managers
 
         public void RemovePlayerCharFromList()
         {
-            var temporaryList = gameCharsLists[GameManager.PlayerListIndex];
-            temporaryList[GameManager.PlayerIndex] = gameBaseTextChar;
-            gameCharsLists[GameManager.PlayerListIndex] = temporaryList;
+            var temporaryList = gameCharsLists[GameManager.ActualPlayerListIndex];
+            temporaryList[GameManager.ActualPlayerIndex] = gameBaseTextChar;
+            gameCharsLists[GameManager.ActualPlayerListIndex] = temporaryList;
         }
 
         public void RemoveEnemyCharFromFirstList(Enemy enemy)
@@ -93,9 +93,9 @@ namespace ConsoleArrayGame.Managers
             temporaryList[enemy.enemyIndex] = gameBaseTextChar;
 
 
-            if(GameManager.PlayerIndex == enemy.enemyIndex && GameManager.PlayerListIndex == enemy.enemyListIndex)
+            if(GameManager.ActualPlayerIndex == enemy.enemyIndex && GameManager.ActualPlayerListIndex == enemy.enemyListIndex)
             {
-                temporaryList[GameManager.PlayerIndex] = playerChar;
+                temporaryList[GameManager.ActualPlayerIndex] = playerChar;
             }
 
             gameCharsLists[0] = temporaryList;
@@ -103,21 +103,21 @@ namespace ConsoleArrayGame.Managers
 
         public void PlaceExplosionChars()
         {
-            var temporaryListA = gameCharsLists[GameManager.PlayerListIndex - 1];
-            var temporaryListB = gameCharsLists[GameManager.PlayerListIndex];
-            var temporaryListC = gameCharsLists[GameManager.PlayerListIndex + 1];
+            var temporaryListA = gameCharsLists[GameManager.ActualPlayerListIndex - 1];
+            var temporaryListB = gameCharsLists[GameManager.ActualPlayerListIndex];
+            var temporaryListC = gameCharsLists[GameManager.ActualPlayerListIndex + 1];
 
-            temporaryListA[GameManager.PlayerIndex] = explosionChar;
+            temporaryListA[GameManager.ActualPlayerIndex] = explosionChar;
 
-            temporaryListB[GameManager.PlayerIndex] = explosionChar;
-            temporaryListB[GameManager.PlayerIndex + 1] = explosionChar;
-            temporaryListB[GameManager.PlayerIndex - 1] = explosionChar;
+            temporaryListB[GameManager.ActualPlayerIndex] = explosionChar;
+            temporaryListB[GameManager.ActualPlayerIndex + 1] = explosionChar;
+            temporaryListB[GameManager.ActualPlayerIndex - 1] = explosionChar;
 
-            temporaryListC[GameManager.PlayerIndex] = explosionChar;
+            temporaryListC[GameManager.ActualPlayerIndex] = explosionChar;
 
-            gameCharsLists[GameManager.PlayerListIndex - 1] = temporaryListA;
-            gameCharsLists[GameManager.PlayerListIndex] = temporaryListB;
-            gameCharsLists[GameManager.PlayerListIndex + 1] = temporaryListC;
+            gameCharsLists[GameManager.ActualPlayerListIndex - 1] = temporaryListA;
+            gameCharsLists[GameManager.ActualPlayerListIndex] = temporaryListB;
+            gameCharsLists[GameManager.ActualPlayerListIndex + 1] = temporaryListC;
         }
 
         public void DisplayEndGameText()
@@ -129,5 +129,52 @@ namespace ConsoleArrayGame.Managers
             Console.ResetColor();
         }
  
+        public void DisplayMainMenu()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine("   ██████╗  ██████╗ ███╗   ██╗███████╗ ██████╗ ██╗     ███████╗");
+            Console.WriteLine("  ██╔════╝ ██╔═══██╗████╗  ██║██╔════╝██╔═══██╗██║     ██╔════╝");
+            Console.WriteLine("  ██║      ██║   ██║██╔██╗ ██║███████╗██║   ██║██║     █████╗  ");
+            Console.WriteLine("  ██║      ██║   ██║██║╚██╗██║╚════██║██║   ██║██║     ██╔══╝  ");
+            Console.WriteLine("  ╚██████╗ ╚██████╔╝██║ ╚████║███████║╚██████╔╝███████╗███████╗");
+            Console.WriteLine("   ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚══════╝╚══════╝");
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine();
+            Console.WriteLine("               █████╗ ██████╗ ██████╗  █████╗ ██╗   ██╗");
+            Console.WriteLine("              ██╔══██╗██╔══██╗██╔══██╗██╔══██╗╚██╗ ██╔╝");
+            Console.WriteLine("              ███████║██████╔╝██████╔╝███████║ ╚████╔╝ ");
+            Console.WriteLine("              ██╔══██║██╔══██╗██╔══██╗██╔══██║  ╚██╔╝  ");
+            Console.WriteLine("              ██║  ██║██║  ██║██║  ██║██║  ██║   ██║   ");
+            Console.WriteLine("              ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ");
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine();
+            Console.WriteLine("                ██████╗  █████╗ ███╗   ███╗███████╗");
+            Console.WriteLine("               ██╔════╝ ██╔══██╗████╗ ████║██╔════╝");
+            Console.WriteLine("               ██║  ███╗███████║██╔████╔██║█████╗  ");
+            Console.WriteLine("               ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝  ");
+            Console.WriteLine("               ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗");
+            Console.WriteLine("                ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝");
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine();
+            Console.WriteLine("  ╔══════════════════════════════════════════════════════════╗");
+            Console.WriteLine("  ║                    >> PRESS ANY KEY <<                   ║");
+            Console.WriteLine("  ╚══════════════════════════════════════════════════════════╝");
+
+            Console.ReadKey(true);
+
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(true);
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine();
+            Console.WriteLine("          ░▒▓█▓▒░  INITIALIZING GAME SYSTEM  ░▒▓█▓▒░");
+            Console.WriteLine("  ██████████████████████████████████████████████████████████");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
 }

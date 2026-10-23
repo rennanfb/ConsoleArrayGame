@@ -7,19 +7,32 @@ internal static class GameManager
     public static InputManager InputManager { get; private set; } = new InputManager();
     public static TextManager TextManager { get; private set; } = new TextManager();
 
-    public static int GamePoints { get; private set; }
-    public static int PlayerIndex { get; private set; } = 31;
-    public static int PlayerListIndex { get; private set; } = 13;
+    public static int GamePoints { get; set; }
+    public static int InitialPlayerIndex { get; private set; } = 31;
+    public static int ActualPlayerIndex { get; private set; }
+    public static int InitialPlayerListIndex { get; private set; } = 13;
+    public static int ActualPlayerListIndex { get; private set; }
     public static List<Enemy> EnemiesList { get; private set; } = new List<Enemy>();
     public static DateTime? EnemySpawnCooldown { get; private set; } = null;
-    public static bool GameOver { get; private set; } = false;
+    public static bool GameOver { get; set; } = false;
 
     public static void Start()
     {
+        ActualPlayerIndex = InitialPlayerIndex;
+        ActualPlayerListIndex = InitialPlayerListIndex;
+
         TextManager.FillBaseText();
 
         TextManager.InitiateGameCharsLists();
         TextManager.InitiatePlayerCharPosition();
+    }
+
+    public static void ConfigurateInitialState()
+    {
+        GameOver = false;
+        GamePoints = 0;
+        TextManager.gameCharsLists.Clear();
+        EnemiesList.Clear();
     }
 
     public static void GameMomentCheck()
@@ -41,6 +54,28 @@ internal static class GameManager
         GameManager.TextManager.PlaceExplosionChars();
         GameManager.TextManager.ShowTable();
         GameManager.TextManager.DisplayEndGameText();
+
+        //DisplayEndGameMenu();
+    }
+
+    public async static void DisplayEndGameMenu()
+    {
+        await Task.Delay(1000);
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("        Press Any Key to Return to the main menu");
+        Console.ForegroundColor = ConsoleColor.White;
+
+        await Task.Delay(1000);
+
+        while (Console.KeyAvailable)
+        {
+            Console.ReadKey(true);
+        }
+
+        Console.ReadKey(true);
+
+        Console.Clear();
     }
 
     private static void InputLogic()
@@ -148,7 +183,7 @@ internal static class GameManager
         {
             if (enemy.active)
             {
-                if (enemy.enemyIndex == PlayerIndex && enemy.enemyListIndex == PlayerListIndex)
+                if (enemy.enemyIndex == ActualPlayerIndex && enemy.enemyListIndex == ActualPlayerListIndex)
                 {
                     GameManager.GameOver = true;
                 }
@@ -174,9 +209,17 @@ internal static class GameManager
         {
             EnemySpawnCooldown = DateTime.Now.AddSeconds(0.07);
         }
-        else if (GameManager.GamePoints >= 2000)
+        else if (GameManager.GamePoints >= 2000 && GameManager.GamePoints <= 2500)
         {
             EnemySpawnCooldown = DateTime.Now.AddSeconds(0.03);
+        }
+        else if (GameManager.GamePoints >= 2500 && GameManager.GamePoints <= 3000)
+        {
+            EnemySpawnCooldown = DateTime.Now.AddSeconds(0.02);
+        }
+        else if (GameManager.GamePoints >= 3000)
+        {
+            EnemySpawnCooldown = DateTime.Now.AddSeconds(0.015);
         }
     }
 
@@ -198,30 +241,38 @@ internal static class GameManager
         {
             enemy.enemyMovementCooldown = DateTime.Now.AddSeconds(0.07);
         }
-        else if (GameManager.GamePoints >= 2000)
+        else if (GameManager.GamePoints >= 2000 && GameManager.GamePoints <= 2500)
         {
             enemy.enemyMovementCooldown = DateTime.Now.AddSeconds(0.05);
+        }
+        else if (GameManager.GamePoints >= 2500 && GameManager.GamePoints <= 3000)
+        {
+            enemy.enemyMovementCooldown = DateTime.Now.AddSeconds(0.03);
+        }
+        else if (GameManager.GamePoints >= 3000)
+        {
+            enemy.enemyMovementCooldown = DateTime.Now.AddSeconds(0.015);
         }
     }
 
     public static void IncreasePlayerListIndex()
     {
-        PlayerListIndex++;
+        ActualPlayerListIndex++;
     }
 
     public static void DecreasePlayerListIndex()
     {
-        PlayerListIndex--;
+        ActualPlayerListIndex--;
     }
 
     public static void IncreasePlayerIndex()
     {
-        PlayerIndex++;
+        ActualPlayerIndex++;
     }
 
     public static void DecreasePlayerIndex()
     {
-        PlayerIndex--;
+        ActualPlayerIndex--;
     }
 }
 

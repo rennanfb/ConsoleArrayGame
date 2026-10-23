@@ -22,7 +22,7 @@ Console Application
 🚀 How to Run
 Clone this repository:
 
-git clone [<REPOSITORY_URL>](https://github.com/rennanfb/ConsoleArrayGame)
+git clone <REPOSITORY_URL>
 Navigate to the project directory:
 
 cd ConsoleArrayGame
