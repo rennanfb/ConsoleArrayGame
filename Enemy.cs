@@ -20,10 +20,5 @@ namespace ConsoleArrayGame
             enemyIndex = index;
             enemyListIndex = listIndex;
         }
-
-        ~Enemy()
-        {
-
-        }
     }
 }

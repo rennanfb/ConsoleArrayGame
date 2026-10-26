@@ -36,7 +36,7 @@ namespace ConsoleArrayGame.Managers
                 Console.WriteLine(gameCharsLists[i]);
             }
         }
-    
+
         public void FillBaseText()
         {
             char[] temporaryCharArray = new char[gameCharsListSize];
@@ -93,7 +93,7 @@ namespace ConsoleArrayGame.Managers
             temporaryList[enemy.enemyIndex] = gameBaseTextChar;
 
 
-            if(GameManager.ActualPlayerIndex == enemy.enemyIndex && GameManager.ActualPlayerListIndex == enemy.enemyListIndex)
+            if (GameManager.ActualPlayerIndex == enemy.enemyIndex && GameManager.ActualPlayerListIndex == enemy.enemyListIndex)
             {
                 temporaryList[GameManager.ActualPlayerIndex] = playerChar;
             }
@@ -128,7 +128,7 @@ namespace ConsoleArrayGame.Managers
             Console.WriteLine("********************* Congratulations ! *********************");
             Console.ResetColor();
         }
- 
+
         public void DisplayMainMenu()
         {
             Console.ForegroundColor = ConsoleColor.DarkBlue;
@@ -175,6 +175,90 @@ namespace ConsoleArrayGame.Managers
             Console.WriteLine("          ░▒▓█▓▒░  INITIALIZING GAME SYSTEM  ░▒▓█▓▒░");
             Console.WriteLine("  ██████████████████████████████████████████████████████████");
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+
+        public void PlaceShieldCollectableChar()
+        {
+            if (GameManager.playerShielded) { return; }
+
+            Random rnd = new Random();
+            var ListIndex = rnd.Next(0, gameCharsListsSize);
+            var CharIndex = rnd.Next(0, gameCharsListSize);
+
+            PlayerShield.collectableCharListIndex = CharIndex;
+            PlayerShield.collectableCharListsIndex = CharIndex;
+
+            var temporaryList = gameCharsLists[ListIndex];
+
+            temporaryList[CharIndex] = PlayerShield.shieldCollectableChar;
+
+        }
+
+        public void RemoveOldShieldChars()
+        {
+            if (!GameManager.playerShielded) return;
+
+            var playerList = gameCharsLists[GameManager.ActualPlayerListIndex];
+
+            if (playerList[GameManager.ActualPlayerIndex + 1] == PlayerShield.centralChar || playerList[GameManager.ActualPlayerIndex + 1] == PlayerShield.leftChar || playerList[GameManager.ActualPlayerIndex + 1] == PlayerShield.rightChar)
+            {
+                playerList[GameManager.ActualPlayerIndex + 1] = gameBaseTextChar;
+            }
+
+            if (playerList[GameManager.ActualPlayerIndex - 1] == PlayerShield.centralChar || playerList[GameManager.ActualPlayerIndex - 1] == PlayerShield.leftChar || playerList[GameManager.ActualPlayerIndex - 1] == PlayerShield.rightChar)
+            {
+
+                playerList[GameManager.ActualPlayerIndex - 1] = gameBaseTextChar;
+            }
+
+            gameCharsLists[GameManager.ActualPlayerListIndex] = playerList;
+
+            var shieldList = gameCharsLists[GameManager.ActualPlayerListIndex + 1];
+
+            if (GameManager.ActualPlayerIndex == 1)
+            {
+                if (shieldList[GameManager.ActualPlayerIndex + 2] == PlayerShield.centralChar || shieldList[GameManager.ActualPlayerIndex + 2] == PlayerShield.leftChar || shieldList[GameManager.ActualPlayerIndex + 2] == PlayerShield.rightChar)
+                {
+                    shieldList[GameManager.ActualPlayerIndex + 2] = gameBaseTextChar;
+                }
+            }
+            else if (GameManager.ActualPlayerIndex == GameManager.TextManager.gameCharsListSize - 2)
+            {
+                if (shieldList[GameManager.ActualPlayerIndex - 2] == PlayerShield.centralChar || shieldList[GameManager.ActualPlayerIndex - 2] == PlayerShield.leftChar || shieldList[GameManager.ActualPlayerIndex - 2] == PlayerShield.rightChar)
+                {
+                    shieldList[GameManager.ActualPlayerIndex - 2] = gameBaseTextChar;
+                }
+            }
+            else
+            {
+                if (shieldList[GameManager.ActualPlayerIndex + 2] == PlayerShield.centralChar || shieldList[GameManager.ActualPlayerIndex + 2] == PlayerShield.leftChar || shieldList[GameManager.ActualPlayerIndex + 2] == PlayerShield.rightChar)
+                {
+                    shieldList[GameManager.ActualPlayerIndex + 2] = gameBaseTextChar;
+                }
+                if (shieldList[GameManager.ActualPlayerIndex - 2] == PlayerShield.centralChar || shieldList[GameManager.ActualPlayerIndex - 2] == PlayerShield.leftChar || shieldList[GameManager.ActualPlayerIndex - 2] == PlayerShield.rightChar)
+                {
+                    shieldList[GameManager.ActualPlayerIndex - 2] = gameBaseTextChar;
+                }
+            }
+            gameCharsLists[GameManager.ActualPlayerListIndex + 1] = shieldList;
+
+
+            if (GameManager.ActualPlayerListIndex + 1 == gameCharsListsSize - 1) return;
+
+            var belowShieldList = gameCharsLists[GameManager.ActualPlayerListIndex + 2];
+
+            for (int i = 0; i <= belowShieldList.Length - 1; i++)
+            {
+                if (belowShieldList[i] == PlayerShield.centralChar || belowShieldList[i] == PlayerShield.leftChar || belowShieldList[i] == PlayerShield.rightChar)
+                {
+                    belowShieldList[i] = gameBaseTextChar;
+                }
+            }
+
+            gameCharsLists[GameManager.ActualPlayerListIndex + 2] = belowShieldList;
+
+
         }
     }
 }

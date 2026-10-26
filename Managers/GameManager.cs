@@ -6,12 +6,12 @@ internal static class GameManager
 {
     public static InputManager InputManager { get; private set; } = new InputManager();
     public static TextManager TextManager { get; private set; } = new TextManager();
-
     public static int GamePoints { get; set; }
     public static int InitialPlayerIndex { get; private set; } = 31;
     public static int ActualPlayerIndex { get; private set; }
     public static int InitialPlayerListIndex { get; private set; } = 13;
     public static int ActualPlayerListIndex { get; private set; }
+    public static bool playerShielded { get; private set; } = false;
     public static List<Enemy> EnemiesList { get; private set; } = new List<Enemy>();
     public static DateTime? EnemySpawnCooldown { get; private set; } = null;
     public static bool GameOver { get; set; } = false;
@@ -31,6 +31,8 @@ internal static class GameManager
     {
         GameOver = false;
         GamePoints = 0;
+        playerShielded = false;
+        PlayerShield.shieldActive = false;
         TextManager.gameCharsLists.Clear();
         EnemiesList.Clear();
     }
@@ -42,10 +44,94 @@ internal static class GameManager
 
         TextManager.SkipFrame();
 
+        TryPlaceShieldCollectableChar();
+        TextManager.RemoveOldShieldChars();
         SummonEnemy();
+        CheckEnemyPlayerShieldCollision();
         MoveEnemies();
         CheckGameOver();
         InputLogic();
+        CheckCollectables();
+    }
+
+    public static void TryPlaceShieldCollectableChar()
+    {
+        if (playerShielded == true  || PlayerShield.shieldActive) return;
+
+        Random rnd = new Random();
+
+        var chance = rnd.Next(0, 1000);
+
+        if(chance >= 30) { return; }
+
+        var ListIndex = rnd.Next(1, TextManager.gameCharsListsSize - 1);
+        var CharIndex = rnd.Next(1, TextManager.gameCharsListSize - 1);
+
+        PlayerShield.collectableCharListIndex = CharIndex;
+        PlayerShield.collectableCharListsIndex = ListIndex;
+
+        var temporaryList = TextManager.gameCharsLists[ListIndex];
+        temporaryList[CharIndex] = PlayerShield.shieldCollectableChar;
+
+        PlayerShield.shieldActive = true;
+
+    }
+
+    public static void CheckCollectables()
+    {
+        if (playerShielded) return;
+        if (!PlayerShield.shieldActive) return;
+
+        if (ActualPlayerIndex == PlayerShield.collectableCharListIndex && ActualPlayerListIndex == PlayerShield.collectableCharListsIndex)
+        {
+
+            var shieldCharList = GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex + 1];
+
+            shieldCharList[PlayerShield.collectableCharListIndex] = PlayerShield.centralChar;
+            shieldCharList[PlayerShield.collectableCharListIndex + 1] = PlayerShield.rightChar;
+            shieldCharList[PlayerShield.collectableCharListIndex - 1] = PlayerShield.leftChar;
+
+            GameManager.TextManager.gameCharsLists[GameManager.ActualPlayerListIndex + 1] = shieldCharList;
+
+            playerShielded = true;
+            PlayerShield.shieldActive = false;
+
+        }
+    }
+
+    public static void CheckEnemyPlayerShieldCollision()
+    {
+
+        if (playerShielded == false) return;
+
+        Enemy enemyToRemove = null;
+
+        foreach(var enemy in EnemiesList)
+        {
+
+            if (enemy.enemyListIndex == ActualPlayerListIndex + 1)
+            {
+                if (enemy.enemyIndex == ActualPlayerIndex || enemy.enemyIndex == ActualPlayerIndex - 1 || enemy.enemyIndex == ActualPlayerIndex + 1)
+                {
+                    var temporaryList = TextManager.gameCharsLists[ActualPlayerListIndex + 1];
+
+                    temporaryList[ActualPlayerIndex] = TextManager.gameBaseTextChar;
+                    temporaryList[ActualPlayerIndex + 1] = TextManager.gameBaseTextChar;
+                    temporaryList[ActualPlayerIndex - 1] = TextManager.gameBaseTextChar;
+
+                    TextManager.gameCharsLists[ActualPlayerListIndex + 1] = temporaryList;
+                    enemyToRemove = enemy;
+                    playerShielded = false;
+                    PlayerShield.ResetCollectableIndexes();
+                    PlayerShield.shieldActive = false;
+
+                }
+            }
+        }
+        if (enemyToRemove != null)
+        {
+            EnemiesList.Remove(enemyToRemove);
+        }
     }
 
     public static void EndGame()
@@ -54,8 +140,6 @@ internal static class GameManager
         GameManager.TextManager.PlaceExplosionChars();
         GameManager.TextManager.ShowTable();
         GameManager.TextManager.DisplayEndGameText();
-
-        //DisplayEndGameMenu();
     }
 
     public async static void DisplayEndGameMenu()
@@ -156,25 +240,55 @@ internal static class GameManager
 
     public static void MoveEnemies()
     {
+        Enemy? enemyToRemove = null;
+
         foreach (var enemy in EnemiesList)
         {
-            if (enemy.enemyMovementCooldown == null)
+            if (PlayerShield.shieldActive && enemy.enemyListIndex == PlayerShield.collectableCharListsIndex)
+            {
+
+                if (enemy.enemyIndex == PlayerShield.collectableCharListIndex)
+                {
+                    enemyToRemove = enemy;
+                    PlayerShield.shieldActive = false;
+
+                    var temporaryList = TextManager.gameCharsLists[PlayerShield.collectableCharListsIndex];
+                    temporaryList[PlayerShield.collectableCharListIndex] = TextManager.gameBaseTextChar;
+
+                    TextManager.gameCharsLists[PlayerShield.collectableCharListsIndex] = temporaryList;
+                }
+            }
+        }
+        if (enemyToRemove != null)
+        {
+            var temporaryList = TextManager.gameCharsLists[enemyToRemove.enemyListIndex];
+            temporaryList[enemyToRemove.enemyIndex] = TextManager.gameBaseTextChar;
+            EnemiesList.Remove(enemyToRemove);
+        }
+
+
+        foreach (var enemy in EnemiesList)
+        {
+            if (enemy.enemyMovementCooldown == null && enemy != enemyToRemove)
             {
                 enemy.enemyMovementCooldown = DateTime.Now.AddSeconds(0.15);
             }
 
-            if (DateTime.Now >= enemy.enemyMovementCooldown && enemy.enemyListIndex != 0)
+            if (DateTime.Now >= enemy.enemyMovementCooldown && enemy.enemyListIndex != 0 && enemy != enemyToRemove)
             {
                 TextManager.MoveEnemyChar(enemy);
                 UpdateEnemyMovementCooldown(enemy);
             }
 
-            if (DateTime.Now >= enemy.enemyMovementCooldown && enemy.enemyListIndex == 0)
+            if (DateTime.Now >= enemy.enemyMovementCooldown && enemy.enemyListIndex == 0 && enemy != enemyToRemove)
             {
                 TextManager.RemoveEnemyCharFromFirstList(enemy);
                 enemy.active = false;
             }
         }
+        
+
+        
     }
 
     public static void CheckGameOver()
