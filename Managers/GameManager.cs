@@ -142,26 +142,6 @@ internal static class GameManager
         GameManager.TextManager.DisplayEndGameText();
     }
 
-    public async static void DisplayEndGameMenu()
-    {
-        await Task.Delay(1000);
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("        Press Any Key to Return to the main menu");
-        Console.ForegroundColor = ConsoleColor.White;
-
-        await Task.Delay(1000);
-
-        while (Console.KeyAvailable)
-        {
-            Console.ReadKey(true);
-        }
-
-        Console.ReadKey(true);
-
-        Console.Clear();
-    }
-
     private static void InputLogic()
     {
         if (Console.KeyAvailable)

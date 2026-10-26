@@ -39,7 +39,7 @@ while(true)
     await Task.Delay(1000);
 
     Console.ForegroundColor = ConsoleColor.Green;
-    Console.WriteLine("        Press Any Key to Return to the main menu");
+    Console.WriteLine("           Press Any Key to Return to the main menu");
     Console.ForegroundColor = ConsoleColor.White;
 
     await Task.Delay(1000);
